@@ -49,7 +49,6 @@ setuptools==75.1.0
 shapely==2.0.5
 six==1.16.0
 threadpoolctl==3.5.0
-tzdata==2023.3
 unicodedata2==15.1.0
 urllib3==2.2.3
 Werkzeug==3.0.3
