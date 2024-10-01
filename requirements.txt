@@ -55,3 +55,4 @@ Werkzeug==3.0.3
 wheel==0.44.0
 xyzservices==2024.9.0
 zstandard==0.22.0
+pyepicollect==5.1.1

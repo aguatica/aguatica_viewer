@@ -1,7 +1,21 @@
 from flask import Flask, render_template_string
 import folium
+import sys
+import os
+
+# Add the project directory to the Python path
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from aguaticaviewer import fetch_entries, entries_to_geodataframe, plot_data
+
+# Fetch the data
+entries = fetch_entries()
+
+# Convert entries to GeoDataFrame
+entries_df = entries_to_geodataframe(entries)
+print(entries_df)
 
 app = Flask(__name__)
+
 
 @app.route('/')
 def index():
