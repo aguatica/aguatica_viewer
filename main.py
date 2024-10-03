@@ -5,7 +5,8 @@ import os
 
 # Add the project directory to the Python path
 #sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from aguaticaviewer.python import APIClient
+
+from aguaticaviewer.api import APIClient
 if __name__ == "__main__":
     # Erstelle eine Instanz des APIClients und starte den Scheduler
     api_client = APIClient(interval=30)  # Aktualisierung des Tokens alle 30 Sekunden
