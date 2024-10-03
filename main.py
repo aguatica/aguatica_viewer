@@ -4,19 +4,17 @@ import sys
 import os
 
 # Add the project directory to the Python path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from aguaticaviewer import fetch_entries, entries_to_geodataframe, plot_data
+#sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from aguaticaviewer.python import APIClient
+if __name__ == "__main__":
+    # Erstelle eine Instanz des APIClients und starte den Scheduler
+    api_client = APIClient(interval=30)  # Aktualisierung des Tokens alle 30 Sekunden
+    api_client.start_token_scheduler()  # Starte den Token-Scheduler in einem separaten Thread
 
-# Fetch the data
-entries = fetch_entries()
-
-# Convert entries to GeoDataFrame
-entries_df = entries_to_geodataframe(entries)
-print(entries_df)
+    # Hauptprogramm, das weiterläuft und auf die Daten zugreifen kann
+    api_client.run()  # Führe die Hauptlogik aus
 
 app = Flask(__name__)
-
-
 @app.route('/')
 def index():
     start_coords = (9.9281, -84.0907)  # Coordinates for San José, Costa Rica
