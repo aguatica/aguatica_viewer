@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<gpx version="1.1" creator="GPS Utility 5.29 - http://www.gpsu.co.uk"
+  xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/WaypointExtension/v1 http://www8.garmin.com/xmlschemas/WaypointExtensionv1.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/CreationTimeExtensions/v1 http://www.garmin.com/xmlschemas/CreationTimeExtensionsv1.xsd"
+  xmlns="http://www.topografix.com/GPX/1/1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:wptx1="http://www.garmin.com/xmlschemas/WaypointExtension/v1"
+  xmlns:gpxtrx="http://www.garmin.com/xmlschemas/GpxExtensions/v3"
+  xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1"
+  xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3"
+  xmlns:ctx="http://www.garmin.com/xmlschemas/CreationTimeExtension/v1">
+
+<trk><name>OU Pisquin</name><extensions><gpxx:TrackExtension xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3"><gpxx:DisplayColor>Blue</gpxx:DisplayColor></gpxx:TrackExtension></extensions>
+<trkseg>
+<trkpt lat="10.208966" lon="-84.160691"></trkpt>
+<trkpt lat="10.209109" lon="-84.160790"></trkpt>
+<trkpt lat="10.209199" lon="-84.160969"></trkpt>
+<trkpt lat="10.209310" lon="-84.161132"></trkpt>
+<trkpt lat="10.209319" lon="-84.161204"></trkpt>
+<trkpt lat="10.209316" lon="-84.161337"></trkpt>
+<trkpt lat="10.209393" lon="-84.161534"></trkpt>
+<trkpt lat="10.209481" lon="-84.161595"></trkpt>
+<trkpt lat="10.209691" lon="-84.161606"></trkpt>
+<trkpt lat="10.209867" lon="-84.161583"></trkpt>
+<trkpt lat="10.210013" lon="-84.161597"></trkpt>
+<trkpt lat="10.210196" lon="-84.161686"></trkpt>
+<trkpt lat="10.210381" lon="-84.161800"></trkpt>
+<trkpt lat="10.210534" lon="-84.161871"></trkpt>
+<trkpt lat="10.210687" lon="-84.161909"></trkpt>
+<trkpt lat="10.210886" lon="-84.161989"></trkpt>
+<trkpt lat="10.210982" lon="-84.161931"></trkpt>
+<trkpt lat="10.211245" lon="-84.161886"></trkpt>
+<trkpt lat="10.211328" lon="-84.161857"></trkpt>
+<trkpt lat="10.211679" lon="-84.161597"></trkpt>
+<trkpt lat="10.211734" lon="-84.161557"></trkpt>
+<trkpt lat="10.211793" lon="-84.161512"></trkpt>
+<trkpt lat="10.211856" lon="-84.161523"></trkpt>
+<trkpt lat="10.211951" lon="-84.161524"></trkpt>
+<trkpt lat="10.211958" lon="-84.161380"></trkpt>
+<trkpt lat="10.211857" lon="-84.161270"></trkpt>
+<trkpt lat="10.211654" lon="-84.161205"></trkpt>
+<trkpt lat="10.211243" lon="-84.161026"></trkpt>
+<trkpt lat="10.211243" lon="-84.160590"></trkpt>
+<trkpt lat="10.211372" lon="-84.160174"></trkpt>
+<trkpt lat="10.211621" lon="-84.160223"></trkpt>
+<trkpt lat="10.211832" lon="-84.160378"></trkpt>
+<trkpt lat="10.212110" lon="-84.160503"></trkpt>
+<trkpt lat="10.212374" lon="-84.160392"></trkpt>
+<trkpt lat="10.212503" lon="-84.160125"></trkpt>
+<trkpt lat="10.212234" lon="-84.159777"></trkpt>
+<trkpt lat="10.212081" lon="-84.159564"></trkpt>
+<trkpt lat="10.211869" lon="-84.159158"></trkpt>
+<trkpt lat="10.211503" lon="-84.158688"></trkpt>
+<trkpt lat="10.211323" lon="-84.158693"></trkpt>
+<trkpt lat="10.211304" lon="-84.159255"></trkpt>
+<trkpt lat="10.210879" lon="-84.159560"></trkpt>
+<trkpt lat="10.210203" lon="-84.159573"></trkpt>
+<trkpt lat="10.209839" lon="-84.159573"></trkpt>
+<trkpt lat="10.209325" lon="-84.159376"></trkpt>
+<trkpt lat="10.208966" lon="-84.160691"></trkpt>
+</trkseg>
+</trk>
+<trk><name>Bosq Pisqu</name><extensions><gpxx:TrackExtension xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3"><gpxx:DisplayColor>Blue</gpxx:DisplayColor></gpxx:TrackExtension></extensions>
+<trkseg>
+<trkpt lat="10.213376" lon="-84.153912"></trkpt>
+<trkpt lat="10.213032" lon="-84.154102"></trkpt>
+<trkpt lat="10.212639" lon="-84.154141"></trkpt>
+<trkpt lat="10.212128" lon="-84.153843"></trkpt>
+<trkpt lat="10.212020" lon="-84.153376"></trkpt>
+<trkpt lat="10.212031" lon="-84.153113"></trkpt>
+<trkpt lat="10.211596" lon="-84.152921"></trkpt>
+<trkpt lat="10.211093" lon="-84.152882"></trkpt>
+<trkpt lat="10.209325" lon="-84.159376"></trkpt>
+<trkpt lat="10.209839" lon="-84.159573"></trkpt>
+<trkpt lat="10.210203" lon="-84.159573"></trkpt>
+<trkpt lat="10.210879" lon="-84.159560"></trkpt>
+<trkpt lat="10.211304" lon="-84.159255"></trkpt>
+<trkpt lat="10.211323" lon="-84.158693"></trkpt>
+<trkpt lat="10.211503" lon="-84.158688"></trkpt>
+<trkpt lat="10.211869" lon="-84.159158"></trkpt>
+<trkpt lat="10.212081" lon="-84.159564"></trkpt>
+<trkpt lat="10.212234" lon="-84.159777"></trkpt>
+<trkpt lat="10.212503" lon="-84.160125"></trkpt>
+<trkpt lat="10.212374" lon="-84.160392"></trkpt>
+<trkpt lat="10.212110" lon="-84.160503"></trkpt>
+<trkpt lat="10.211832" lon="-84.160378"></trkpt>
+<trkpt lat="10.211621" lon="-84.160223"></trkpt>
+<trkpt lat="10.211372" lon="-84.160174"></trkpt>
+<trkpt lat="10.211243" lon="-84.160590"></trkpt>
+<trkpt lat="10.211243" lon="-84.161026"></trkpt>
+<trkpt lat="10.211654" lon="-84.161205"></trkpt>
+<trkpt lat="10.211857" lon="-84.161270"></trkpt>
+<trkpt lat="10.211958" lon="-84.161380"></trkpt>
+<trkpt lat="10.211951" lon="-84.161524"></trkpt>
+<trkpt lat="10.212048" lon="-84.161598"></trkpt>
+<trkpt lat="10.212102" lon="-84.161750"></trkpt>
+<trkpt lat="10.212140" lon="-84.161912"></trkpt>
+<trkpt lat="10.212731" lon="-84.161799"></trkpt>
+<trkpt lat="10.213235" lon="-84.162028"></trkpt>
+<trkpt lat="10.213895" lon="-84.161408"></trkpt>
+<trkpt lat="10.214115" lon="-84.161043"></trkpt>
+<trkpt lat="10.214079" lon="-84.160774"></trkpt>
+<trkpt lat="10.214229" lon="-84.160729"></trkpt>
+<trkpt lat="10.214363" lon="-84.160818"></trkpt>
+<trkpt lat="10.214508" lon="-84.161093"></trkpt>
+<trkpt lat="10.214682" lon="-84.161517"></trkpt>
+<trkpt lat="10.214978" lon="-84.161839"></trkpt>
+<trkpt lat="10.215803" lon="-84.162035"></trkpt>
+<trkpt lat="10.216267" lon="-84.162267"></trkpt>
+<trkpt lat="10.216509" lon="-84.161508"></trkpt>
+<trkpt lat="10.216667" lon="-84.160131"></trkpt>
+<trkpt lat="10.216791" lon="-84.158525"></trkpt>
+<trkpt lat="10.216895" lon="-84.157839"></trkpt>
+<trkpt lat="10.217170" lon="-84.156985"></trkpt>
+<trkpt lat="10.217230" lon="-84.155874"></trkpt>
+<trkpt lat="10.216876" lon="-84.155317"></trkpt>
+<trkpt lat="10.216581" lon="-84.154657"></trkpt>
+<trkpt lat="10.215840" lon="-84.154686"></trkpt>
+<trkpt lat="10.215183" lon="-84.154592"></trkpt>
+<trkpt lat="10.214817" lon="-84.154510"></trkpt>
+<trkpt lat="10.214083" lon="-84.154127"></trkpt>
+<trkpt lat="10.213606" lon="-84.154006"></trkpt>
+<trkpt lat="10.213376" lon="-84.153912"></trkpt>
+</trkseg>
+</trk>
+<trk><name>OB Pisquin</name><extensions><gpxx:TrackExtension xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3"><gpxx:DisplayColor>Blue</gpxx:DisplayColor></gpxx:TrackExtension></extensions>
+<trkseg>
+<trkpt lat="10.217230" lon="-84.155874"></trkpt>
+<trkpt lat="10.217170" lon="-84.156985"></trkpt>
+<trkpt lat="10.216895" lon="-84.157839"></trkpt>
+<trkpt lat="10.216791" lon="-84.158525"></trkpt>
+<trkpt lat="10.216667" lon="-84.160131"></trkpt>
+<trkpt lat="10.216509" lon="-84.161508"></trkpt>
+<trkpt lat="10.216267" lon="-84.162267"></trkpt>
+<trkpt lat="10.216949" lon="-84.162853"></trkpt>
+<trkpt lat="10.217226" lon="-84.162976"></trkpt>
+<trkpt lat="10.219759" lon="-84.164719"></trkpt>
+<trkpt lat="10.220401" lon="-84.164887"></trkpt>
+<trkpt lat="10.221146" lon="-84.164758"></trkpt>
+<trkpt lat="10.222863" lon="-84.163802"></trkpt>
+<trkpt lat="10.223891" lon="-84.163548"></trkpt>
+<trkpt lat="10.224726" lon="-84.163578"></trkpt>
+<trkpt lat="10.225413" lon="-84.163744"></trkpt>
+<trkpt lat="10.226623" lon="-84.163864"></trkpt>
+<trkpt lat="10.227948" lon="-84.163751"></trkpt>
+<trkpt lat="10.228311" lon="-84.163942"></trkpt>
+<trkpt lat="10.228505" lon="-84.164371"></trkpt>
+<trkpt lat="10.228682" lon="-84.164654"></trkpt>
+<trkpt lat="10.228886" lon="-84.164754"></trkpt>
+<trkpt lat="10.229320" lon="-84.164393"></trkpt>
+<trkpt lat="10.229978" lon="-84.164149"></trkpt>
+<trkpt lat="10.231310" lon="-84.163989"></trkpt>
+<trkpt lat="10.232929" lon="-84.164153"></trkpt>
+<trkpt lat="10.233670" lon="-84.163941"></trkpt>
+<trkpt lat="10.234606" lon="-84.163656"></trkpt>
+<trkpt lat="10.235242" lon="-84.163687"></trkpt>
+<trkpt lat="10.237117" lon="-84.164076"></trkpt>
+<trkpt lat="10.237492" lon="-84.163965"></trkpt>
+<trkpt lat="10.238001" lon="-84.163646"></trkpt>
+<trkpt lat="10.239739" lon="-84.163283"></trkpt>
+<trkpt lat="10.240739" lon="-84.163204"></trkpt>
+<trkpt lat="10.241125" lon="-84.163303"></trkpt>
+<trkpt lat="10.241408" lon="-84.163545"></trkpt>
+<trkpt lat="10.241876" lon="-84.164014"></trkpt>
+<trkpt lat="10.242024" lon="-84.164080"></trkpt>
+<trkpt lat="10.242207" lon="-84.164116"></trkpt>
+<trkpt lat="10.242054" lon="-84.163777"></trkpt>
+<trkpt lat="10.241944" lon="-84.163398"></trkpt>
+<trkpt lat="10.241690" lon="-84.161949"></trkpt>
+<trkpt lat="10.241396" lon="-84.161507"></trkpt>
+<trkpt lat="10.241068" lon="-84.161277"></trkpt>
+<trkpt lat="10.240091" lon="-84.160908"></trkpt>
+<trkpt lat="10.239723" lon="-84.160954"></trkpt>
+<trkpt lat="10.239232" lon="-84.161272"></trkpt>
+<trkpt lat="10.239065" lon="-84.161381"></trkpt>
+<trkpt lat="10.237332" lon="-84.162018"></trkpt>
+<trkpt lat="10.236990" lon="-84.162054"></trkpt>
+<trkpt lat="10.236458" lon="-84.161917"></trkpt>
+<trkpt lat="10.235764" lon="-84.161614"></trkpt>
+<trkpt lat="10.235354" lon="-84.161041"></trkpt>
+<trkpt lat="10.235055" lon="-84.160490"></trkpt>
+<trkpt lat="10.234845" lon="-84.160263"></trkpt>
+<trkpt lat="10.234324" lon="-84.159997"></trkpt>
+<trkpt lat="10.233829" lon="-84.159154"></trkpt>
+<trkpt lat="10.232916" lon="-84.158470"></trkpt>
+<trkpt lat="10.231884" lon="-84.157746"></trkpt>
+<trkpt lat="10.231370" lon="-84.157608"></trkpt>
+<trkpt lat="10.230889" lon="-84.157752"></trkpt>
+<trkpt lat="10.230685" lon="-84.157835"></trkpt>
+<trkpt lat="10.230471" lon="-84.157910"></trkpt>
+<trkpt lat="10.230318" lon="-84.157918"></trkpt>
+<trkpt lat="10.229962" lon="-84.157863"></trkpt>
+<trkpt lat="10.229112" lon="-84.157523"></trkpt>
+<trkpt lat="10.228418" lon="-84.157760"></trkpt>
+<trkpt lat="10.228091" lon="-84.157740"></trkpt>
+<trkpt lat="10.227712" lon="-84.157577"></trkpt>
+<trkpt lat="10.227344" lon="-84.157111"></trkpt>
+<trkpt lat="10.226949" lon="-84.156446"></trkpt>
+<trkpt lat="10.226583" lon="-84.156191"></trkpt>
+<trkpt lat="10.225368" lon="-84.155796"></trkpt>
+<trkpt lat="10.224903" lon="-84.155729"></trkpt>
+<trkpt lat="10.224659" lon="-84.155741"></trkpt>
+<trkpt lat="10.223892" lon="-84.155963"></trkpt>
+<trkpt lat="10.223190" lon="-84.156228"></trkpt>
+<trkpt lat="10.222746" lon="-84.156223"></trkpt>
+<trkpt lat="10.221187" lon="-84.155645"></trkpt>
+<trkpt lat="10.220235" lon="-84.155612"></trkpt>
+<trkpt lat="10.219986" lon="-84.155515"></trkpt>
+<trkpt lat="10.219853" lon="-84.155211"></trkpt>
+<trkpt lat="10.219880" lon="-84.155027"></trkpt>
+<trkpt lat="10.219651" lon="-84.153970"></trkpt>
+<trkpt lat="10.219478" lon="-84.153768"></trkpt>
+<trkpt lat="10.217353" lon="-84.154170"></trkpt>
+<trkpt lat="10.216787" lon="-84.154619"></trkpt>
+<trkpt lat="10.216581" lon="-84.154657"></trkpt>
+<trkpt lat="10.216876" lon="-84.155317"></trkpt>
+<trkpt lat="10.217230" lon="-84.155874"></trkpt>
+</trkseg>
+</trk>
+<trk><name>OB2 Piquin</name><extensions><gpxx:TrackExtension xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3"><gpxx:DisplayColor>Blue</gpxx:DisplayColor></gpxx:TrackExtension></extensions>
+<trkseg>
+<trkpt lat="10.212031" lon="-84.153113"></trkpt>
+<trkpt lat="10.212020" lon="-84.153376"></trkpt>
+<trkpt lat="10.212128" lon="-84.153843"></trkpt>
+<trkpt lat="10.212639" lon="-84.154141"></trkpt>
+<trkpt lat="10.213032" lon="-84.154102"></trkpt>
+<trkpt lat="10.213376" lon="-84.153912"></trkpt>
+<trkpt lat="10.213070" lon="-84.153786"></trkpt>
+<trkpt lat="10.212114" lon="-84.153150"></trkpt>
+<trkpt lat="10.212031" lon="-84.153113"></trkpt>
+</trkseg>
+</trk>
+
+</gpx>
