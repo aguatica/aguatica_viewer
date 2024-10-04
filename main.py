@@ -4,16 +4,7 @@ import sys
 import os
 
 # Add the project directory to the Python path
-#sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-from aguaticaviewer.api import APIClient
-if __name__ == "__main__":
-    # Erstelle eine Instanz des APIClients und starte den Scheduler
-    api_client = APIClient(interval=30)  # Aktualisierung des Tokens alle 30 Sekunden
-    api_client.start_token_scheduler()  # Starte den Token-Scheduler in einem separaten Thread
-
-    # Hauptprogramm, das weiterläuft und auf die Daten zugreifen kann
-    api_client.run()  # Führe die Hauptlogik aus
+# sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 app = Flask(__name__)
 @app.route('/')
@@ -36,5 +27,14 @@ def index():
 
     return render_template_string(map_html)
 
-if __name__ == '__main__':
-    app.run(debug=True)  # Keep debug=True for development
+app.run(debug=True)
+
+from aguaticaviewer.api import APIClient
+if __name__ == "__main__":
+    # Erstelle eine Instanz des APIClients und starte den Scheduler
+    api_client = APIClient(interval=60)  # Aktualisierung des Tokens alle 30 Sekunden
+    api_client.start_token_scheduler()  # Starte den Token-Scheduler in einem separaten Thread
+
+    # Hauptprogramm, das weiterläuft und auf die Daten zugreifen kann
+    api_client.run()  # Führe die Hauptlogik aus
+

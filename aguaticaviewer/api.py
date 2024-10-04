@@ -4,6 +4,7 @@ import json
 import hashlib
 import pyepicollect as pyep
 import geopandas as gpd
+import pandas as pd
 from aguaticaviewer.config import CLIENT_ID, CLIENT_SECRET, SLUG
 from shapely.geometry import Point
 import pprint
@@ -13,21 +14,42 @@ pp = pprint.PrettyPrinter(indent=2)
 class APIClient:
     def __init__(self, interval=30):
         self._token = None
+        self._token_expiry_time = None
         self._entries = None
         self._previous_hash = None
         self.interval = interval  # Intervall in Sekunden, wie oft der Token aktualisiert wird
 
     def request_token(self):
         try:
-            self._token = pyep.auth.request_token(CLIENT_ID, CLIENT_SECRET)
+            token_data = pyep.auth.request_token(CLIENT_ID, CLIENT_SECRET)
+            self._token = token_data
+            expires_in = token_data.get('expires_in', 7200)  # 7200 seconds (2 hours) if not provided
+
+            # Store the exact time when the token will expire
+            self._token_expiry_time = time.time() + expires_in  # Current time + expires_in
+
+            # Store the exact time when the token will expire
+            self._token_expiry_time = time.time() + expires_in
             print("Token successfully refreshed!")
             return self._token
         except Exception as e:
             print(f"Error requesting token: {e}")
             return None
 
+    def is_token_expired(self):
+        """Check if the token has expired based on the expiry time."""
+        if self._token_expiry_time is None:
+            return True  # If we don't have a token yet, consider it expired
+        return time.time() >= self._token_expiry_time  # Check if current time exceeds expiration time
+
     def fetch_entries(self):
-        token = self.request_token()  # Aktuellen Token abrufen
+        if self._token is None or self.is_token_expired():  # Check if the token has expired
+            token = self.request_token()  # Fetch new token if expired
+            print("Token expired, requesting new one")
+        else:
+            token = self._token
+            print("Token still valid.")
+
         if token is not None:
             try:
                 # Daten mit dem aktuellen Token abrufen
@@ -44,7 +66,6 @@ class APIClient:
 
     def schedule_token_refresh(self):
         while True:
-            print("Refreshing token and fetching new entries...")
             self.fetch_entries()  # Token aktualisieren und Einträge abrufen
             time.sleep(self.interval)  # Warte das festgelegte Intervall
 
@@ -65,12 +86,17 @@ class APIClient:
             coords = entry.get('9_Coordenas_de_GPS', {})
             latitude = coords.get('latitude', None)
             longitude = coords.get('longitude', None)
+            uploaded_at = entry.get('uploaded_at', None)
+
+            # Convert "created_at" to datetime if it's a string and needed for further processing
+            uploaded_at_dt = pd.to_datetime(uploaded_at) if uploaded_at else None
 
             if latitude is not None and longitude is not None and latitude != '' and longitude != '':
                 try:
                     geometry = Point(float(longitude), float(latitude))  # Konvertierung in Float sicherstellen
                     data_entry = {
                         'geometry': geometry,
+                        'uploaded_at': uploaded_at_dt,
                         **entry  # Unpack die anderen Felder im Eintrag
                     }
                     data_list.append(data_entry)
@@ -85,13 +111,24 @@ class APIClient:
             return gpd.GeoDataFrame()  # Leeren GeoDataFrame zurückgeben, wenn keine gültigen Einträge
 
     def calculate_hash(self, data):
-        data_str = json.dumps(data, sort_keys=True)  # JSON-Daten als String, sortiert
-        return hashlib.md5(data_str.encode('utf-8')).hexdigest()  # MD5-Hash der Daten
+        # Extract only relevant fields (coordinates and created_at) and create a list of dicts
+        filtered_data = [
+            {
+                'latitude': entry.get('9_Coordenas_de_GPS', {}).get('latitude'),
+                'longitude': entry.get('9_Coordenas_de_GPS', {}).get('longitude'),
+                'uploaded_at': entry.get('uploaded_at')
+            }
+            for entry in data if entry.get('9_Coordenas_de_GPS')  # Only include entries with coordinates
+        ]
+
+        # Sort the data list to ensure consistent ordering before hashing
+        filtered_data_str = json.dumps(filtered_data, sort_keys=True)  # JSON data as string, sorted by keys
+        return hashlib.sha256(filtered_data_str.encode('utf-8')).hexdigest()  # Hash with SHA256
 
     def has_data_changed(self, new_data):
-        new_hash = self.calculate_hash(new_data)
+        new_hash = self.calculate_hash(new_data)  # Only hash relevant fields
         data_changed = new_hash != self._previous_hash
-        self._previous_hash = new_hash  # Speichere den neuen Hash-Wert
+        self._previous_hash = new_hash  # Store the new hash
         return data_changed
 
     def run(self):
@@ -106,7 +143,6 @@ class APIClient:
                     print("Data has changed, updating GeoDataFrame...")
                     # Konvertiere die Einträge in einen GeoDataFrame
                     entries_df = self.entries_to_geodataframe()
-                    # Hier kannst du den GeoDataFrame weiterverarbeiten
                     print("New GeoDataFrame created with updated data.")
                 else:
                     print("No data changes detected.")
