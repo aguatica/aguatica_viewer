@@ -1,4 +1,4 @@
-import threading
+import asyncio
 import time
 import json
 import hashlib
@@ -7,26 +7,20 @@ import geopandas as gpd
 import pandas as pd
 from aguaticaviewer.config import CLIENT_ID, CLIENT_SECRET, SLUG
 from shapely.geometry import Point
-import pprint
-
-pp = pprint.PrettyPrinter(indent=2)
 
 class APIClient:
-    def __init__(self, interval=30):
+    def __init__(self, interval=60):
         self._token = None
         self._token_expiry_time = None
         self._entries = None
         self._previous_hash = None
-        self.interval = interval  # Intervall in Sekunden, wie oft der Token aktualisiert wird
+        self.interval = interval  # Interval in seconds for token refresh
 
-    def request_token(self):
+    async def request_token(self):
         try:
             token_data = pyep.auth.request_token(CLIENT_ID, CLIENT_SECRET)
             self._token = token_data
-            expires_in = token_data.get('expires_in', 7200)  # 7200 seconds (2 hours) if not provided
-
-            # Store the exact time when the token will expire
-            self._token_expiry_time = time.time() + expires_in  # Current time + expires_in
+            expires_in = token_data.get('expires_in', 7200)  # Default to 2 hours if not provided
 
             # Store the exact time when the token will expire
             self._token_expiry_time = time.time() + expires_in
@@ -39,12 +33,12 @@ class APIClient:
     def is_token_expired(self):
         """Check if the token has expired based on the expiry time."""
         if self._token_expiry_time is None:
-            return True  # If we don't have a token yet, consider it expired
-        return time.time() >= self._token_expiry_time  # Check if current time exceeds expiration time
+            return True
+        return time.time() >= self._token_expiry_time
 
-    def fetch_entries(self):
-        if self._token is None or self.is_token_expired():  # Check if the token has expired
-            token = self.request_token()  # Fetch new token if expired
+    async def fetch_entries(self):
+        if self._token is None or self.is_token_expired():
+            token = await self.request_token()
             print("Token expired, requesting new one")
         else:
             token = self._token
@@ -52,9 +46,9 @@ class APIClient:
 
         if token is not None:
             try:
-                # Daten mit dem aktuellen Token abrufen
+                # Fetch data with the current token
                 wrapper_entries = pyep.api.get_entries(SLUG, token['access_token'])
-                self._entries = wrapper_entries['data']['entries']  # Einträge speichern
+                self._entries = wrapper_entries['data']['entries']
                 print("Fetched entries")
                 return self._entries
             except Exception as e:
@@ -64,15 +58,25 @@ class APIClient:
             print("Failed to fetch entries: No valid token.")
             return []
 
-    def schedule_token_refresh(self):
+    async def schedule_token_refresh(self):
         while True:
-            self.fetch_entries()  # Token aktualisieren und Einträge abrufen
-            time.sleep(self.interval)  # Warte das festgelegte Intervall
+            await self.fetch_entries()  # Refresh token and fetch entries
+            await asyncio.sleep(self.interval)  # Wait for the specified interval
 
-    def start_token_scheduler(self):
-        token_thread = threading.Thread(target=self.schedule_token_refresh)
-        token_thread.daemon = True  # Der Daemon-Thread schließt automatisch, wenn das Hauptprogramm beendet wird
-        token_thread.start()
+    async def run(self):
+        while True:
+            latest_entries = self.get_entries()
+
+            if latest_entries:
+                data_changed = self.has_data_changed(latest_entries)
+                if data_changed:
+                    print("Data has changed, updating GeoDataFrame...")
+                    entries_df = self.entries_to_geodataframe()
+                    print("New GeoDataFrame created with updated data.")
+                else:
+                    print("No data changes detected.")
+
+            await asyncio.sleep(self.interval)
 
     def get_entries(self):
         return self._entries
