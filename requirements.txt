@@ -17,6 +17,12 @@ folium==0.17.0
 fonttools==4.51.0
 GDAL==3.6.2
 geopandas==0.14.2
+google-api-core==2.20.0
+google-api-python-client==2.147.0
+google-auth==2.35.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.1
+googleapis-common-protos==1.65.0
 h2==4.1.0
 hpack==4.0.0
 hyperframe==6.0.1

@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "aguatica-webviewer",
+  "private_key_id": "61c6f7b51e35b35dbcb8d579a8c01b79cfe1787c",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDoX0vuFKWSze9y\n0vV26ZXqUzQFGqkqlXVChQS290OEkMZkWK3xXgKU/2VaKGBMmQbjA59v5GcE7LkX\nnH5qLNyU81LbGZYDTs5Z22IDRjXKHG3vb58tWe04Rb0XDE3N6h/BKHHT/HPFMYsG\nMjejWYyG+gHrOchc+KmV0qbHXyishNUjbb7p1szuwNcm+25DWT6XXpzFnbFSQM+b\nU7lETptUU6WqpgsVKW+bEafrhWbWqwXBTsNrlpl3jUbQ8+CLfPLtQBibtDxzZREO\nGyn6NoD/2G6MYTX/i3EIElRbkLm/3rs8OXhcaECbiKD4CMZ2nLgatXzWPBr6Ose9\nUW8tJF91AgMBAAECggEALLWFNPoo/017OEMJsobv7sVyeVbvXH+kL5fLV+7MQVnf\nqhf747hcU9Gt7QJewO4iipQ8XXl7LtHjLP1Rv1kBWfFVLE3IdLt5bYWN3qZoHAqL\nRmnaHQ4z28NjRed6otdco7wF5q0okzTclGUeGmJU7PV2YA1elTDM5ERDDZIsD8Ej\nK0ZbQHXCohqGhWf/rv6xdUBVS558lEVklN1fNd+YyF8Gaen+5un4lxWt63yfI5xV\nS9UfGCtLnv4hWy2mIj0yDcIA4UjqhH0DDNdqxJjPekh1vSfHzdqOZFOlYvVwWrkl\nMm3CHLG6+uXJFFpiYwHfQS57Qc7T4MfMThIUU42UQQKBgQD1/ie1dVJmLkiVptVB\nzSNf486N1nfM6ap6w7MuHY3lcVH6uPQtpkvqWcy7UQIEeDcESlnrT4z3yp+PdYu6\nqXeN2croZUFO5dA94ow3oaE37VHhezDrJ+UnDsTgZm74o434+Bp6ZNcUdMJ33xZ+\nFQuFZDO6hoPl6LE6w/Ql0ff+FQKBgQDx00sAEbI7SaXu5HthRycM4Tn8hWYFz31A\nR/hUG3Vi5v/ySYDhLj8C6fwcR6D7c99a8WuxyIbmbELYotwy6014v+79ATshqRR7\n6hrbUrbX6AEF+WoX6WV/8xGrP5K/8KAPiNrbcbfazFKUsjAT3y52ofdpR9SYmP1c\n0e4IaCiT4QKBgGpyAy7TSMesiX4whiGGKiOJSU05G/gQuNOMsZFn+onpgmby9751\nMm6DU0NPJ4dVmcECh2x6rO5gwLDsVX19bZ11PAdaIWuJqJXO3YwJJeE0kXT3wNBR\nICjJjEnqKWTwKTQt8A88aZGRgMEsSOhgJO8gz/2LzbGEAoUCXDitZhmNAoGBAJi3\nw2mrw09F15Diojhw4uxzYFdlN2T8ADGUQfN708o97+1nFgkfV5PTiO+jHLswFiIs\nzMJdzTO/swd08nMFvss/CwKkwF8llFYdJhDUT7xSPDM1rBalwv/m1YW8hETLBYpJ\n900Wp/F5j71wOoSSMZmh98l5H32vQHJZ8WVFwjqBAoGBAL0ZNnoldmm6C0UkIlYA\nDWfqVImHrzScEEBUExldR/dMHSOB5lujA4sFGQ1M6MrTKdq5fqD08UTCo4Im+X+s\nZvk49+D/UtRzt55tbJmdkQUUjK4uEnFll/MErXq1L6AhTYx9X40PmRKUyxoZuUFo\ngjGUFlRu0rRP0G+FEuLiE92I\n-----END PRIVATE KEY-----\n",
+  "client_email": "aguatica-viewer@aguatica-webviewer.iam.gserviceaccount.com",
+  "client_id": "102873974480311182201",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/aguatica-viewer%40aguatica-webviewer.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
