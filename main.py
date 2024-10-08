@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 app = Quart(__name__)
 
 # Initialize APIClient
-api_client = APIClient_EPI5(interval=30)
+api_client = APIClient_EPI5(interval=60)
 
 @app.route('/')
 async def index():
