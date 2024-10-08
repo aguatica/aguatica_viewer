@@ -3,48 +3,27 @@ import folium
 import asyncio
 import threading
 from aguaticaviewer.api import APIClient
+from aguaticaviewer.api_drive import APIClient_Drive
 from shapely.geometry import Point
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-
-#from google.oauth2 import service_account
-#from googleapiclient.discovery import build
-#import requests
 from Google import Create_Service
+from aguaticaviewer.config import FOLDER_ID
+import geopandas as gpd
+from googleapiclient.http import MediaIoBaseDownload
+
 
 app = Flask(__name__)
 
 # Initialize APIClient
 api_client = APIClient(interval=60)
 
+# Instantiate DriveClient
+drive_client = APIClient_Drive()
 
 
-
-# Define the path to your service account JSON file
-SERVICE_ACCOUNT_FILE = "aguatica-webviewer-61c6f7b51e35.json"
-SCOPES = ['https://www.googleapis.com/auth/drive']  # Read-only access to Google Drive
-
-# Authenticate using service account credentials
-credentials = service_account.Credentials.from_service_account_file(
-    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-
-# Build the Drive API service
-service = build('drive', 'v3', credentials=credentials)
-
-# Now you can use the `service` object to interact with the Drive API
-print("Service created:", service)
-
-# Example: List files in your Google Drive
-results = service.files().list(pageSize=10, fields="nextPageToken, files(id, name)").execute()
-items = results.get('files', [])
-
-if not items:
-    print('No files found.')
-else:
-    print('Files:')
-    for item in items:
-        print(f"{item['name']} ({item['id']})")
-
+# List and process files in the specified folder without downloading
+items = drive_client.process_files_in_folder(FOLDER_ID)
 
 @app.route('/')
 def index():
