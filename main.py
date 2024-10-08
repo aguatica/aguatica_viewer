@@ -19,7 +19,7 @@ async def index():
     folium_map = folium.Map(location=start_coords, zoom_start=13)
     tooltip = 'Click For More Info'
 
-    entries_df = await api_client.run() # Get updated entries as GeoDataFrame
+    entries_df = api_client.get_geodataframe() # Get updated entries as GeoDataFrame
     # Check if the GeoDataFrame exists and is not empty
     if entries_df is None:
         print("GeoDataFrame is None, background task might not have fetched data yet.")
