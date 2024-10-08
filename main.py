@@ -137,11 +137,6 @@ async def index():
     # Save the map as an HTML file in the templates directory
     folium_map.save('templates/map.html')
 
-    # Render the map.html directly using render_template_string
-    with open('templates/map.html', 'r', encoding='utf-8') as f:
-        map_html = f.read()
-
-
     # Render the map.html using render_template
     return await render_template('map.html')  # Use await with render_template for asynchronous context
 
