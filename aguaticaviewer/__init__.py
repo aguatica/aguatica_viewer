@@ -1,5 +1,5 @@
 # aguaticaviewer/__init__.py
 
-from aguaticaviewer.api import APIClient
+from aguaticaviewer.api_epi5 import APIClient_EPI5
 
 
