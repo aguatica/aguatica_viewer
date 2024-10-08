@@ -41,12 +41,6 @@ class APIClient_EPI5:
         return time.time() >= self._token_expiry_time
 
     async def fetch_entries(self):
-        if self._token is None or self.is_token_expired():
-            await self.request_token()  # Await the token request
-            logging.info("Token expired, requesting new one.")
-        else:
-            logging.info("Token still valid.")
-
         if self._token is not None:
             try:
                 # Simulate fetching data with the current token
@@ -139,4 +133,5 @@ class APIClient_EPI5:
                 logging.error(f"Error in run method: {e}")
 
             await asyncio.sleep(self.interval)
+
 
