@@ -6,6 +6,7 @@ from googleapiclient.http import MediaIoBaseDownload
 import geopandas as gpd
 import io
 import zipfile
+import fiona
 
 class APIClient_Drive:
     def __init__(self):
@@ -48,22 +49,23 @@ class APIClient_Drive:
             return fh
 
     def read_shapefile_to_gdf(self, file_id, file_name):
-        """Reads a shapefile directly from Google Drive and returns a GeoDataFrame."""
+        """Read shapefile content from Google Drive into a GeoDataFrame."""
+        # Only process files with the .shp extension
+        if not file_name.endswith('.shp'):
+            print(f"Skipping non-shapefile: {file_name}")
+            return None
+
         # Stream file content from Google Drive into memory
         file_content = self.read_file_from_drive(file_id)
-
-        # If the file is a ZIP, extract shapefiles from it
-        if file_name.endswith('.zip'):
-            with zipfile.ZipFile(file_content, 'r') as z:
-                for file in z.namelist():
-                    if file.endswith('.shp'):
-                        with z.open(file) as shp_file:
-                            gdf = gpd.read_file(shp_file)
-                            return gdf
-        else:
-            # Handle regular .shp files
+        
+        # Try to read the shapefile into a GeoDataFrame
+        try:
             gdf = gpd.read_file(file_content)
             return gdf
+        except fiona.errors.DriverError as e:
+            print(f"Error reading shapefile {file_name}: {e}")
+            return None
+
 
     def process_files_in_folder(self, folder_id):
         """Recursively access files in the folder and process shapefiles."""
@@ -71,18 +73,23 @@ class APIClient_Drive:
 
         if not items:
             print(f'No files found in folder with ID: {folder_id}')
-            return None
+            return []
+
+        shapefiles = []
 
         for item in items:
-            print(f"{item['name']} ({item['id']}) - MIME Type: {item['mimeType']}")
+            #print(f"{item['name']} ({item['id']}) - MIME Type: {item['mimeType']}")
 
             if item['mimeType'] == 'application/vnd.google-apps.folder':
                 # It's a folder, recursively process files in the subfolder
-                self.process_files_in_folder(item['id'])
+                subfolder_files = self.process_files_in_folder(item['id'])
+                shapefiles.extend(subfolder_files)
             else:
-                # Process if it's a shapefile or a ZIP containing a shapefile
-                if item['name'].endswith('.shp') or item['name'].endswith('.zip'):
+                # Process if it's a shapefile
+                if item['name'].endswith('.shp'):
                     gdf = self.read_shapefile_to_gdf(item['id'], item['name'])
                     if gdf is not None:
                         print(f"GeoDataFrame created from {item['name']}:")
-                        print(gdf.head())
+                        shapefiles.append({'name': item['name'], 'gdf': gdf})
+
+        return shapefiles

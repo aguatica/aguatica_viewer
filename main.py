@@ -10,8 +10,6 @@ from googleapiclient.discovery import build
 from Google import Create_Service
 from aguaticaviewer.config import FOLDER_ID
 import geopandas as gpd
-from googleapiclient.http import MediaIoBaseDownload
-
 
 app = Flask(__name__)
 
@@ -21,9 +19,12 @@ api_client = APIClient(interval=60)
 # Instantiate DriveClient
 drive_client = APIClient_Drive()
 
+shapefiles_drive = drive_client.process_files_in_folder(FOLDER_ID)
+
 
 # List and process files in the specified folder without downloading
-items = drive_client.process_files_in_folder(FOLDER_ID)
+#shapefiles_drive = drive_client.process_files_in_folder(FOLDER_ID)
+#print("Shapefiles", shapefiles_drive)
 
 @app.route('/')
 def index():
@@ -153,6 +154,22 @@ def index():
             popup=popup_text,
             tooltip=tooltip
         ).add_to(folium_map)
+        # Process shapefiles and add them to the map
+
+    # Process shapefiles and add them to the map
+
+
+    print("Shapefiles", shapefiles_drive)
+
+    # Check if shapefiles were retrieved successfully before iteration
+    if shapefiles_drive:
+        for shapefile in shapefiles_drive:
+            # Add each shapefile's GeoDataFrame as a layer on the map
+            geojson_data = shapefile['gdf'].to_json()
+            folium.GeoJson(geojson_data, name=shapefile['name']).add_to(folium_map)
+    else:
+        print(f"No shapefiles found in folder ID: {FOLDER_ID}")
+
 
 
     # Save the map as an HTML file in the templates directory
