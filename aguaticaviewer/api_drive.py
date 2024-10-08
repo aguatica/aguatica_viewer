@@ -1,4 +1,4 @@
-# drive_clientapi_drive.py
+# api_drive.py
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from aguaticaviewer.config import SERVICE_ACCOUNT_FILE, SCOPES
@@ -7,6 +7,8 @@ import geopandas as gpd
 import io
 import zipfile
 import fiona
+import tempfile
+import os
 
 class APIClient_Drive:
     def __init__(self):
@@ -22,7 +24,7 @@ class APIClient_Drive:
     def _build_service(self):
         """Build the Google Drive API service."""
         return build('drive', 'v3', credentials=self.credentials)
-
+    
     def list_files_in_folder(self, folder_id, page_size=10):
         """List files in a specific Google Drive folder."""
         results = self.service.files().list(
@@ -32,6 +34,7 @@ class APIClient_Drive:
         ).execute()
 
         return results.get('files', [])
+     
     
     def read_file_from_drive(self, file_id):
             """Read file content directly from Google Drive into memory."""
@@ -47,25 +50,51 @@ class APIClient_Drive:
             # After downloading, seek to the start of the BytesIO buffer
             fh.seek(0)
             return fh
-
-    def read_shapefile_to_gdf(self, file_id, file_name):
-        """Read shapefile content from Google Drive into a GeoDataFrame."""
-        # Only process files with the .shp extension
-        if not file_name.endswith('.shp'):
-            print(f"Skipping non-shapefile: {file_name}")
-            return None
-
-        # Stream file content from Google Drive into memory
-        file_content = self.read_file_from_drive(file_id)
+    
+    def download_shapefile_files(self, folder_id, shapefile_prefix):
+        """Download all files belonging to a shapefile (shp, shx, dbf, etc.)"""
+        files = self.list_files_in_folder(folder_id)
+        shapefile_files = {}
         
-        # Try to read the shapefile into a GeoDataFrame
-        try:
-            gdf = gpd.read_file(file_content)
-            return gdf
-        except fiona.errors.DriverError as e:
-            print(f"Error reading shapefile {file_name}: {e}")
-            return None
+        # Identify the required components (.shp, .shx, .dbf, etc.)
+        extensions = ['.shp', '.shx', '.dbf', '.prj', '.cpg']
+        for file in files:
+            if any(file['name'].endswith(ext) for ext in extensions) and file['name'].startswith(shapefile_prefix):
+                shapefile_files[file['name']] = self.read_file_from_drive(file['id'])
+        
+        return shapefile_files
 
+    def read_shapefile_to_gdf(self, folder_id, shapefile_prefix):
+        """Download and read a shapefile with all its components."""
+        # Download the shapefile components
+        shapefile_files = self.download_shapefile_files(folder_id, shapefile_prefix)
+        
+        if not shapefile_files:
+            print(f"Shapefile {shapefile_prefix} not found.")
+            return None
+        
+        # Create an in-memory ZIP file containing all shapefile components
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w') as zf:
+            for filename, file_content in shapefile_files.items():
+                zf.writestr(filename, file_content.getvalue())
+        
+        zip_buffer.seek(0)  # Move to the beginning of the buffer
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            zip_path = os.path.join(tmpdir, f"{shapefile_prefix}.zip")
+
+            # Write the in-memory ZIP file to disk
+            with open(zip_path, 'wb') as f:
+                f.write(zip_buffer.getvalue())
+
+            # Read the shapefile from the temporary ZIP file using geopandas
+            try:
+                gdf = gpd.read_file(f"zip://{zip_path}")
+                return gdf
+            except Exception as e:
+                print(f"Error reading shapefile: {e}")
+                return None
 
     def process_files_in_folder(self, folder_id):
         """Recursively access files in the folder and process shapefiles."""
@@ -78,16 +107,16 @@ class APIClient_Drive:
         shapefiles = []
 
         for item in items:
-            #print(f"{item['name']} ({item['id']}) - MIME Type: {item['mimeType']}")
-
+            # Check if the item is a folder
             if item['mimeType'] == 'application/vnd.google-apps.folder':
-                # It's a folder, recursively process files in the subfolder
+                # Recursively process subfolders
                 subfolder_files = self.process_files_in_folder(item['id'])
                 shapefiles.extend(subfolder_files)
             else:
-                # Process if it's a shapefile
+                # Process shapefile only if it matches '.shp' prefix
                 if item['name'].endswith('.shp'):
-                    gdf = self.read_shapefile_to_gdf(item['id'], item['name'])
+                    shapefile_prefix = item['name'].replace('.shp', '')
+                    gdf = self.read_shapefile_to_gdf(folder_id, shapefile_prefix)
                     if gdf is not None:
                         print(f"GeoDataFrame created from {item['name']}:")
                         shapefiles.append({'name': item['name'], 'gdf': gdf})

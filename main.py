@@ -154,23 +154,15 @@ def index():
             popup=popup_text,
             tooltip=tooltip
         ).add_to(folium_map)
-        # Process shapefiles and add them to the map
-
-    # Process shapefiles and add them to the map
-
-
-    print("Shapefiles", shapefiles_drive)
 
     # Check if shapefiles were retrieved successfully before iteration
+    # Process shapefiles and add them to the map
     if shapefiles_drive:
         for shapefile in shapefiles_drive:
-            # Add each shapefile's GeoDataFrame as a layer on the map
             geojson_data = shapefile['gdf'].to_json()
             folium.GeoJson(geojson_data, name=shapefile['name']).add_to(folium_map)
     else:
         print(f"No shapefiles found in folder ID: {FOLDER_ID}")
-
-
 
     # Save the map as an HTML file in the templates directory
     folium_map.save('templates/map.html')
