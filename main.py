@@ -33,28 +33,114 @@ async def index():
             latitude = row.geometry.y
             longitude = row.geometry.x
 
-            popup_text = f"""
-            <table style="width:100%; border: 1px solid black; border-collapse: collapse;">
-              <tr style="border: 1px solid black;">
-                <th style="border: 1px solid black; padding: 8px;">Parameter</th>
-                <th style="border: 1px solid black; padding: 8px;">Value</th>
-              </tr>
-              <tr style="border: 1px solid black;">
-                <td style="border: 1px solid black; padding: 8px;"><strong>Nombre de la finca</strong></td>
-                <td style="border: 1px solid black; padding: 8px;">{row.get('2_Nombre_de_la_finca', 'N/A')}</td>
-              </tr>
-              <!-- Add other rows as necessary -->
-            </table>
-            """
+        popup_text = f"""
+        <table style="width:100%; border: 1px solid black; border-collapse: collapse;">
+          <tr style="border: 1px solid black;">
+            <th style="border: 1px solid black; padding: 8px;">Parameter</th>
+            <th style="border: 1px solid black; padding: 8px;">Value</th>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>Nombre de la finca</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('2_Nombre_de_la_finca', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>Sitio de muestreo</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('3_Sitio_de_muestreo', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>Fecha de colecta</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('4_Da_de_la_colecta', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>Hora de colecta</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('5_Hora_de_la_colecta', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>Tipo de sitio</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('6_Tipo_de_sitio_de_m', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>Tipo de Agua</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('7_Tipo_de_Agua', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>Tipo de mediciones</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('8_Tipo_de_mediciones', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>GPS Coordinates</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('9_Coordenas_de_GPS', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>pH</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('10_pH', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>Sólidos disueltos</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('11_Slidos_disueltos', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>Conductividad</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('12_Conductividad', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>Temperatura</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('13_Temperatura', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>Fosfatos</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('14_Fosfatos', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>Nitritos</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('15_Nitritos', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>O18</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('16_O18', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>H2</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('17_H2', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>E. coli</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('18_Ecoli', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>Coliformes Totales</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('19_Coliformes_totale', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>Foto</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('20_Tome_una_foto', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>Video</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('21_Grabe_un_video_de', 'N/A')}</td>
+          </tr>
+          <tr style="border: 1px solid black;">
+            <td style="border: 1px solid black; padding: 8px;"><strong>Notas adicionales</strong></td>
+            <td style="border: 1px solid black; padding: 8px;">{row.get('22_Anote_cualquier_c', 'N/A')}</td>
+          </tr>
+        </table>
+        """
 
-            folium.Marker(
-                location=(latitude, longitude),
-                popup=popup_text,
-                tooltip=tooltip
-            ).add_to(folium_map)
+        # Add marker to the map
+        folium.Marker(
+            location=(latitude, longitude),
+            popup=popup_text,
+            tooltip=tooltip
+        ).add_to(folium_map)
+
 
     # Save the map as an HTML file in the templates directory
     folium_map.save('templates/map.html')
+
+    # Render the map.html directly using render_template_string
+    with open('templates/map.html', 'r', encoding='utf-8') as f:
+        map_html = f.read()
+
 
     # Render the map.html using render_template
     return await render_template('map.html')  # Use await with render_template for asynchronous context
