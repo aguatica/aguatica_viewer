@@ -20,6 +20,9 @@ api_client = APIClient(interval=60)
 drive_client = APIClient_Drive()
 
 shapefiles_drive = drive_client.process_files_in_folder(FOLDER_ID)
+#print("Shapefiles", shapefiles_drive)
+print("size of shapefiles", len(shapefiles_drive))
+print("Number of missing files: ", drive_client.counter_for_missing_files)
 
 
 # List and process files in the specified folder without downloading
@@ -49,11 +52,6 @@ def index():
         if isinstance(row.geometry, Point):  # Check if geometry is a Point
             latitude = row.geometry.y  # Get latitude
             longitude = row.geometry.x  # Get longitude
-
-            # Optional: Customize the popup with additional data
-            #popup_text = f"<strong>Temperature: {row['13_Temperatura']}</strong><br>"
-            #popup_text += f"Conductivity: {row.get('12_Conductividad', 'N/A')}<br>"
-            #popup_text += f"Collected by: {row.get('1_Nombre_del_Colecto', 'Unknown')}"
 
         popup_text = f"""
         <table style="width:100%; border: 1px solid black; border-collapse: collapse;">
@@ -196,3 +194,5 @@ if __name__ == "__main__":
 
     # Start asyncio loop for APIClient in the main thread
     loop.run_until_complete(run_background_tasks())
+
+    

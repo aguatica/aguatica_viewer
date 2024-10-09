@@ -14,6 +14,7 @@ class APIClient_Drive:
     def __init__(self):
         self.credentials = self._authenticate()
         self.service = self._build_service()
+        self.counter_for_missing_files = 0
 
     def _authenticate(self):
         """Authenticate using the service account credentials."""
@@ -45,7 +46,7 @@ class APIClient_Drive:
             done = False
             while not done:
                 status, done = downloader.next_chunk()
-                print(f"Download {int(status.progress() * 100)}% complete.")
+                #print(f"Download {int(status.progress() * 100)}% complete.")
             
             # After downloading, seek to the start of the BytesIO buffer
             fh.seek(0)
@@ -57,7 +58,7 @@ class APIClient_Drive:
         shapefile_files = {}
         
         # Identify the required components (.shp, .shx, .dbf, etc.)
-        extensions = ['.shp', '.shx', '.dbf', '.prj', '.cpg']
+        extensions = ['.shp', '.shx', '.dbf']
         for file in files:
             if any(file['name'].endswith(ext) for ext in extensions) and file['name'].startswith(shapefile_prefix):
                 shapefile_files[file['name']] = self.read_file_from_drive(file['id'])
@@ -68,6 +69,15 @@ class APIClient_Drive:
         """Download and read a shapefile with all its components."""
         # Download the shapefile components
         shapefile_files = self.download_shapefile_files(folder_id, shapefile_prefix)
+            # Validate that all required shapefile components are present
+
+        required_extensions = ['.shp', '.shx', '.dbf']
+        missing_extensions = [ext for ext in required_extensions if not any(file_name.endswith(ext) for file_name in shapefile_files)]
+
+        if not all(any(file_name.endswith(ext) for file_name in shapefile_files) for ext in required_extensions):
+            print(f"Missing required shapefile components for {shapefile_prefix}: {', '.join(missing_extensions)}. Skipping...")
+            self.counter_for_missing_files += 1
+            return None
         
         if not shapefile_files:
             print(f"Shapefile {shapefile_prefix} not found.")
