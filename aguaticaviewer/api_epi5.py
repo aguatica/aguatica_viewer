@@ -83,7 +83,7 @@ class APIClient_EPI5:
                 logging.info(f"Skipping entry {entry['ec5_uuid']} due to missing or empty coordinates.")
 
         if data_list:
-            self._geodataframe = gpd.GeoDataFrame(data_list, geometry='geometry', crs='EPSG:4326')
+            self._geodataframe = gpd.GeoDataFrame(data_list, geometry='geometry', crs='EPSG:8909')
             return self._geodataframe
 
     def get_geodataframe(self):
