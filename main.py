@@ -18,8 +18,15 @@ api_client = APIClient(interval=60)
 
 # Instantiate DriveClient
 drive_client = APIClient_Drive()
-
+shapefiles_list = drive_client.list_files_in_folder(FOLDER_ID)
 shapefiles_drive = drive_client.process_files_in_folder(FOLDER_ID)
+for gdf in shapefiles_drive[5]:
+    print(f"Filename: {gdf.attrs.get('filename')}, Folder: {gdf.attrs.get('folder_name')}")
+
+
+shapefile_filenames = drive_client.read_file_from_drive('1vfHa--0rSYtrckkyrz3QbUmEuomq24gu')
+
+shapefile_downloads= drive_client.download_shapefile_files('1ygeoKJD76bJwwooEL22YKoKy5Zmv1PYh', 'Colinas Vertical_wgs84')
 #print("Shapefiles", shapefiles_drive)
 print("size of shapefiles", len(shapefiles_drive))
 print("Number of missing files: ", drive_client.counter_for_missing_files)
@@ -195,4 +202,4 @@ if __name__ == "__main__":
     # Start asyncio loop for APIClient in the main thread
     loop.run_until_complete(run_background_tasks())
 
-    
+folder = drive_client.service.files().get(fileId=FOLDER_ID_INTEL, fields='name').execute()

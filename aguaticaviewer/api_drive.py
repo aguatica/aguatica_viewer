@@ -25,19 +25,64 @@ class APIClient_Drive:
     def _build_service(self):
         """Build the Google Drive API service."""
         return build('drive', 'v3', credentials=self.credentials)
-    
-    def list_files_in_folder(self, folder_id, page_size=10):
-        """List files in a specific Google Drive folder."""
-        results = self.service.files().list(
-            q=f"'{folder_id}' in parents",
-            pageSize=page_size,
-            fields="nextPageToken, files(id, name, mimeType)"
-        ).execute()
 
-        return results.get('files', [])
-     
-    
+    def list_files_in_folder(self, folder_id, page_size=100):
+        """List all files in a specific Google Drive folder, including folder name, and handle pagination."""
+        all_files = []
+        next_page_token = None
+        page_count = 0
+
+        try:
+            # Get the folder name by using the get method
+            folder = self.service.files().get(fileId=folder_id, fields='name').execute()
+            folder_name = folder['name']  # Extract the folder name
+
+            while True:
+                results = self.service.files().list(
+                    q=f"'{folder_id}' in parents",
+                    pageSize=page_size,
+                    fields="nextPageToken, files(id, name, mimeType), incompleteSearch",
+                    pageToken=next_page_token,
+                    orderBy="name"
+                ).execute()
+
+                files = results.get('files', [])
+
+                for file in files:
+                    file['folder_name'] = folder_name  # Attach the folder name to each file
+
+                all_files.extend(files)
+                page_count += 1
+
+                print(f"Page {page_count}: Retrieved {len(files)} files")
+                if results.get('incompleteSearch'):
+                    print("Warning: Search results may be incomplete")
+
+                next_page_token = results.get('nextPageToken')
+                if not next_page_token:
+                    break
+
+            if not all_files:
+                print(f"No files found in folder with ID: {folder_id}")
+            else:
+                print(f"Total files found: {len(all_files)}")
+                for file in all_files:
+                    print(f"- {file['name']} (ID: {file['id']}, Type: {file['mimeType']})")
+
+            return all_files
+
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
+            return []
+
     def read_file_from_drive(self, file_id):
+            # Get the file metadata, including the name
+            file_metadata = self.service.files().get(fileId=file_id, fields='name').execute()
+
+            # Print the filename
+            file_name = file_metadata.get('name')
+            print(f"Downloading file: {file_name}")
+
             """Read file content directly from Google Drive into memory."""
             request = self.service.files().get_media(fileId=file_id)
             fh = io.BytesIO()  # In-memory buffer to store file contents
@@ -65,70 +110,73 @@ class APIClient_Drive:
         
         return shapefile_files
 
-    def read_shapefile_to_gdf(self, folder_id, shapefile_prefix):
+    def read_shapefile_to_gdf(self, folder_id, shapefile_prefix, folder_name):
         """Download and read a shapefile with all its components."""
-        # Download the shapefile components
         shapefile_files = self.download_shapefile_files(folder_id, shapefile_prefix)
-            # Validate that all required shapefile components are present
 
         required_extensions = ['.shp', '.shx', '.dbf']
-        missing_extensions = [ext for ext in required_extensions if not any(file_name.endswith(ext) for file_name in shapefile_files)]
+        missing_extensions = [ext for ext in required_extensions if
+                              not any(file_name.endswith(ext) for file_name in shapefile_files)]
 
         if not all(any(file_name.endswith(ext) for file_name in shapefile_files) for ext in required_extensions):
-            print(f"Missing required shapefile components for {shapefile_prefix}: {', '.join(missing_extensions)}. Skipping...")
+            print(
+                f"Missing required shapefile components for {shapefile_prefix}: {', '.join(missing_extensions)}. Skipping...")
             self.counter_for_missing_files += 1
             return None
-        
+
         if not shapefile_files:
             print(f"Shapefile {shapefile_prefix} not found.")
             return None
-        
-        # Create an in-memory ZIP file containing all shapefile components
+
         zip_buffer = io.BytesIO()
         with zipfile.ZipFile(zip_buffer, 'w') as zf:
             for filename, file_content in shapefile_files.items():
                 zf.writestr(filename, file_content.getvalue())
-        
-        zip_buffer.seek(0)  # Move to the beginning of the buffer
+
+        zip_buffer.seek(0)
 
         with tempfile.TemporaryDirectory() as tmpdir:
             zip_path = os.path.join(tmpdir, f"{shapefile_prefix}.zip")
 
-            # Write the in-memory ZIP file to disk
             with open(zip_path, 'wb') as f:
                 f.write(zip_buffer.getvalue())
 
-            # Read the shapefile from the temporary ZIP file using geopandas
             try:
                 gdf = gpd.read_file(f"zip://{zip_path}")
+                gdf.attrs['folder_name'] = folder_name  # Store folder name in GDF attributes
                 return gdf
             except Exception as e:
                 print(f"Error reading shapefile: {e}")
                 return None
 
     def process_files_in_folder(self, folder_id):
-        """Recursively access files in the folder and process shapefiles."""
+        #Access files in the folder and process shapefiles, returning a list of GeoDataFrames with folder and file names.
         items = self.list_files_in_folder(folder_id)
 
         if not items:
             print(f'No files found in folder with ID: {folder_id}')
             return []
 
-        shapefiles = []
+        gdf_list = []  # List to hold GeoDataFrames with their folder and file names
 
         for item in items:
-            # Check if the item is a folder
             if item['mimeType'] == 'application/vnd.google-apps.folder':
-                # Recursively process subfolders
-                subfolder_files = self.process_files_in_folder(item['id'])
-                shapefiles.extend(subfolder_files)
+                # Process subfolders
+                subfolder_gdfs = self.process_files_in_folder(item['id'])  # Recursively process subfolder
+                gdf_list.extend(subfolder_gdfs)  # Add subfolder GDFs to the main list
             else:
-                # Process shapefile only if it matches '.shp' prefix
+                # Process shapefile
                 if item['name'].endswith('.shp'):
                     shapefile_prefix = item['name'].replace('.shp', '')
-                    gdf = self.read_shapefile_to_gdf(folder_id, shapefile_prefix)
+                    folder_name = item['folder_name']  # Get the folder name from the item
+                    gdf = self.read_shapefile_to_gdf(folder_id, shapefile_prefix,
+                                                     folder_name)  # Pass the correct folder name
                     if gdf is not None:
-                        print(f"GeoDataFrame created from {item['name']}:")
-                        shapefiles.append({'name': item['name'], 'gdf': gdf})
+                        print(f"GeoDataFrame created from {item['name']} in folder {folder_name}:")
+                        # Append a dictionary with folder name, file name, and GeoDataFrame
+                        gdf_list.append({'folder_name': folder_name, 'file_name': item['name'], 'gdf': gdf})
 
-        return shapefiles
+        return gdf_list  # Return the list of GeoDataFrames with their folder and file names
+
+
+
