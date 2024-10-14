@@ -1,0 +1,12 @@
+
+#html file that is always updated when runnning main
+templates/map.html
+
+#Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Quart cache and logs
+quart_cache/
+quart_logs/
