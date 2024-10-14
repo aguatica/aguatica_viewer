@@ -19,6 +19,8 @@ api_client = APIClient(interval=60)
 # Instantiate DriveClient
 drive_client = APIClient_Drive()
 
+# List and process files in the specified folder without downloading
+shapefiles_drive = drive_client.process_files_in_folder(FOLDER_ID)
 
 @app.route('/')
 def index():
@@ -36,9 +38,13 @@ def index():
         # Optionally, return a different message or page
         return "No data available"
 
+    # Retrieve and print the CRS of the GeoDataFrame
+    crs = entries_df.crs
+    print(f"CRS of the entries GeoDataFrame: {crs}")
 
-
-        # Iterate through the entries_df to add markers for each entry
+    # Create a FeatureGroup for entries_df
+    entries_group = folium.FeatureGroup(name='Entries')
+    # Iterate through the entries_df to add markers for each entry
     for _, row in entries_df.iterrows():
         if isinstance(row.geometry, Point):  # Check if geometry is a Point
             latitude = row.geometry.y  # Get latitude
@@ -142,18 +148,31 @@ def index():
             location=(latitude, longitude),
             popup=popup_text,
             tooltip=tooltip
-        ).add_to(folium_map)
+        ).add_to(entries_group)
 
-    # List and process files in the specified folder without downloading
-    shapefiles_drive = drive_client.process_files_in_folder(FOLDER_ID)
+    # Add the entries FeatureGroup to the map
+    entries_group.add_to(folium_map)
+
     # Process shapefiles and add them to the map
     if shapefiles_drive:
         for shapefile in shapefiles_drive:
-            # Create a FeatureGroup for each shapefile
-            feature_group = folium.FeatureGroup(name=shapefile['file_name'])
-            geojson_data = shapefile['gdf'].to_json()
-            folium.GeoJson(geojson_data).add_to(feature_group)
-            feature_group.add_to(folium_map)  # Add FeatureGroup to the map
+            # Check if the GeoDataFrame is valid
+            if isinstance(shapefile['gdf'], gpd.GeoDataFrame) and not shapefile['gdf'].empty:
+                # Print the CRS
+                print(f"Shapefile '{shapefile['file_name']}' CRS: {shapefile['gdf'].crs}")
+
+                # Reproject to WGS 84 if needed
+                if shapefile['gdf'].crs is not None and shapefile['gdf'].crs != "EPSG:4326":
+                    shapefile['gdf'] = shapefile['gdf'].to_crs("EPSG:4326")
+                    print(f"Reprojected '{shapefile['file_name']}' to EPSG:4326")
+
+                # Create a FeatureGroup for each shapefile
+                feature_group = folium.FeatureGroup(name=shapefile['file_name'])
+                geojson_data = shapefile['gdf'].to_json()
+                folium.GeoJson(geojson_data).add_to(feature_group)
+                feature_group.add_to(folium_map)  # Add FeatureGroup to the map
+            else:
+                print(f"Shapefile '{shapefile['file_name']}' is not a valid GeoDataFrame or is empty.")
     else:
         print(f"No shapefiles found in folder ID: {FOLDER_ID}")
 

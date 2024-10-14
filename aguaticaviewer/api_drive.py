@@ -10,6 +10,7 @@ import fiona
 import tempfile
 import os
 
+
 class APIClient_Drive:
     def __init__(self):
         self.credentials = self._authenticate()
@@ -76,45 +77,45 @@ class APIClient_Drive:
             return []
 
     def read_file_from_drive(self, file_id):
-            # Get the file metadata, including the name
-            file_metadata = self.service.files().get(fileId=file_id, fields='name').execute()
+        # Get the file metadata, including the name
+        file_metadata = self.service.files().get(fileId=file_id, fields='name').execute()
 
-            # Print the filename
-            file_name = file_metadata.get('name')
-            print(f"Downloading file: {file_name}")
+        # Print the filename
+        file_name = file_metadata.get('name')
+        print(f"Downloading file: {file_name}")
 
-            """Read file content directly from Google Drive into memory."""
-            request = self.service.files().get_media(fileId=file_id)
-            fh = io.BytesIO()  # In-memory buffer to store file contents
-            downloader = MediaIoBaseDownload(fh, request)
+        """Read file content directly from Google Drive into memory."""
+        request = self.service.files().get_media(fileId=file_id)
+        fh = io.BytesIO()  # In-memory buffer to store file contents
+        downloader = MediaIoBaseDownload(fh, request)
 
-            done = False
-            while not done:
-                status, done = downloader.next_chunk()
-                #print(f"Download {int(status.progress() * 100)}% complete.")
-            
-            # After downloading, seek to the start of the BytesIO buffer
-            fh.seek(0)
-            return fh
-    
+        done = False
+        while not done:
+            status, done = downloader.next_chunk()
+            # print(f"Download {int(status.progress() * 100)}% complete.")
+
+        # After downloading, seek to the start of the BytesIO buffer
+        fh.seek(0)
+        return fh
+
     def download_shapefile_files(self, folder_id, shapefile_prefix):
         """Download all files belonging to a shapefile (shp, shx, dbf, etc.)"""
         files = self.list_files_in_folder(folder_id)
         shapefile_files = {}
-        
+
         # Identify the required components (.shp, .shx, .dbf, etc.)
-        extensions = ['.shp', '.shx', '.dbf']
+        extensions = ['.shp', '.shx', '.dbf', '.prj']
         for file in files:
             if any(file['name'].endswith(ext) for ext in extensions) and file['name'].startswith(shapefile_prefix):
                 shapefile_files[file['name']] = self.read_file_from_drive(file['id'])
-        
+
         return shapefile_files
 
     def read_shapefile_to_gdf(self, folder_id, shapefile_prefix, folder_name):
         """Download and read a shapefile with all its components."""
         shapefile_files = self.download_shapefile_files(folder_id, shapefile_prefix)
 
-        required_extensions = ['.shp', '.shx', '.dbf']
+        required_extensions = ['.shp', '.shx', '.dbf', '.prj']
         missing_extensions = [ext for ext in required_extensions if
                               not any(file_name.endswith(ext) for file_name in shapefile_files)]
 
@@ -150,7 +151,7 @@ class APIClient_Drive:
                 return None
 
     def process_files_in_folder(self, folder_id):
-        #Access files in the folder and process shapefiles, returning a list of GeoDataFrames with folder and file names.
+        # Access files in the folder and process shapefiles, returning a list of GeoDataFrames with folder and file names.
         items = self.list_files_in_folder(folder_id)
 
         if not items:
