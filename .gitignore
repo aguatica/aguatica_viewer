@@ -10,3 +10,11 @@ __pycache__/
 # Quart cache and logs
 quart_cache/
 quart_logs/
+
+
+.idea/
+# Ignore all .xml and .iml files in .idea/
+*.iml
+*.xml
+
+.vscode/
