@@ -19,15 +19,6 @@ api_client = APIClient(interval=60)
 # Instantiate DriveClient
 drive_client = APIClient_Drive()
 
-shapefiles_drive = drive_client.process_files_in_folder(FOLDER_ID)
-#print("Shapefiles", shapefiles_drive)
-print("size of shapefiles", len(shapefiles_drive))
-print("Number of missing files: ", drive_client.counter_for_missing_files)
-
-
-# List and process files in the specified folder without downloading
-#shapefiles_drive = drive_client.process_files_in_folder(FOLDER_ID)
-#print("Shapefiles", shapefiles_drive)
 
 @app.route('/')
 def index():
@@ -153,14 +144,21 @@ def index():
             tooltip=tooltip
         ).add_to(folium_map)
 
-    # Check if shapefiles were retrieved successfully before iteration
+    # List and process files in the specified folder without downloading
+    shapefiles_drive = drive_client.process_files_in_folder(FOLDER_ID)
     # Process shapefiles and add them to the map
     if shapefiles_drive:
         for shapefile in shapefiles_drive:
+            # Create a FeatureGroup for each shapefile
+            feature_group = folium.FeatureGroup(name=shapefile['file_name'])
             geojson_data = shapefile['gdf'].to_json()
-            folium.GeoJson(geojson_data, name=shapefile['name']).add_to(folium_map)
+            folium.GeoJson(geojson_data).add_to(feature_group)
+            feature_group.add_to(folium_map)  # Add FeatureGroup to the map
     else:
         print(f"No shapefiles found in folder ID: {FOLDER_ID}")
+
+    # Add LayerControl to the map
+    folium.LayerControl().add_to(folium_map)
 
     # Save the map as an HTML file in the templates directory
     folium_map.save('templates/map.html')
@@ -194,5 +192,3 @@ if __name__ == "__main__":
 
     # Start asyncio loop for APIClient in the main thread
     loop.run_until_complete(run_background_tasks())
-
-    

@@ -9,4 +9,5 @@ SLUG = 'monitoreo-de-agua'
 #For Google Drive API
 SERVICE_ACCOUNT_FILE = "aguatica-webviewer-61c6f7b51e35.json"
 SCOPES = ['https://www.googleapis.com/auth/drive']  # Read-only access to Google Drive
-FOLDER_ID = '1PyMwB85ukIQiLkTuIoyQSL_dINR_J10X'
+FOLDER_ID = '1t-u10CLuh7LCYjCKFP4W-3LKSzrwN0W4'
+
