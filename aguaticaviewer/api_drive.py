@@ -1,4 +1,4 @@
-# api_drive.py
+import asyncio
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from aguaticaviewer.config import SERVICE_ACCOUNT_FILE, SCOPES
@@ -6,7 +6,6 @@ from googleapiclient.http import MediaIoBaseDownload
 import geopandas as gpd
 import io
 import zipfile
-import fiona
 import tempfile
 import os
 
@@ -27,7 +26,7 @@ class APIClient_Drive:
         """Build the Google Drive API service."""
         return build('drive', 'v3', credentials=self.credentials)
 
-    def list_files_in_folder(self, folder_id, page_size=100):
+    async def list_files_in_folder(self, folder_id, page_size=100):
         """List all files in a specific Google Drive folder, including folder name, and handle pagination."""
         all_files = []
         next_page_token = None
@@ -39,13 +38,16 @@ class APIClient_Drive:
             folder_name = folder['name']  # Extract the folder name
 
             while True:
-                results = self.service.files().list(
-                    q=f"'{folder_id}' in parents",
-                    pageSize=page_size,
-                    fields="nextPageToken, files(id, name, mimeType), incompleteSearch",
-                    pageToken=next_page_token,
-                    orderBy="name"
-                ).execute()
+                results = await asyncio.get_event_loop().run_in_executor(
+                    None,
+                    lambda: self.service.files().list(
+                        q=f"'{folder_id}' in parents",
+                        pageSize=page_size,
+                        fields="nextPageToken, files(id, name, mimeType), incompleteSearch",
+                        pageToken=next_page_token,
+                        orderBy="name"
+                    ).execute()
+                )
 
                 files = results.get('files', [])
 
@@ -76,44 +78,49 @@ class APIClient_Drive:
             print(f"An error occurred: {str(e)}")
             return []
 
-    def read_file_from_drive(self, file_id):
+    async def read_file_from_drive(self, file_id):
+        """Read file content directly from Google Drive into memory."""
         # Get the file metadata, including the name
-        file_metadata = self.service.files().get(fileId=file_id, fields='name').execute()
+        file_metadata = await asyncio.get_event_loop().run_in_executor(
+            None,
+            lambda: self.service.files().get(fileId=file_id, fields='name').execute()
+        )
 
         # Print the filename
         file_name = file_metadata.get('name')
         print(f"Downloading file: {file_name}")
 
-        """Read file content directly from Google Drive into memory."""
         request = self.service.files().get_media(fileId=file_id)
         fh = io.BytesIO()  # In-memory buffer to store file contents
         downloader = MediaIoBaseDownload(fh, request)
 
         done = False
         while not done:
-            status, done = downloader.next_chunk()
-            # print(f"Download {int(status.progress() * 100)}% complete.")
+            status, done = await asyncio.get_event_loop().run_in_executor(
+                None,
+                lambda: downloader.next_chunk()
+            )
 
         # After downloading, seek to the start of the BytesIO buffer
         fh.seek(0)
         return fh
 
-    def download_shapefile_files(self, folder_id, shapefile_prefix):
+    async def download_shapefile_files(self, folder_id, shapefile_prefix):
         """Download all files belonging to a shapefile (shp, shx, dbf, etc.)"""
-        files = self.list_files_in_folder(folder_id)
+        files = await self.list_files_in_folder(folder_id)
         shapefile_files = {}
 
         # Identify the required components (.shp, .shx, .dbf, etc.)
         extensions = ['.shp', '.shx', '.dbf', '.prj']
         for file in files:
             if any(file['name'].endswith(ext) for ext in extensions) and file['name'].startswith(shapefile_prefix):
-                shapefile_files[file['name']] = self.read_file_from_drive(file['id'])
+                shapefile_files[file['name']] = await self.read_file_from_drive(file['id'])
 
         return shapefile_files
 
-    def read_shapefile_to_gdf(self, folder_id, shapefile_prefix, folder_name):
+    async def read_shapefile_to_gdf(self, folder_id, shapefile_prefix, folder_name):
         """Download and read a shapefile with all its components."""
-        shapefile_files = self.download_shapefile_files(folder_id, shapefile_prefix)
+        shapefile_files = await self.download_shapefile_files(folder_id, shapefile_prefix)
 
         required_extensions = ['.shp', '.shx', '.dbf', '.prj']
         missing_extensions = [ext for ext in required_extensions if
@@ -150,9 +157,9 @@ class APIClient_Drive:
                 print(f"Error reading shapefile: {e}")
                 return None
 
-    def process_files_in_folder(self, folder_id):
+    async def process_files_in_folder(self, folder_id):
         # Access files in the folder and process shapefiles, returning a list of GeoDataFrames with folder and file names.
-        items = self.list_files_in_folder(folder_id)
+        items = await self.list_files_in_folder(folder_id)
 
         if not items:
             print(f'No files found in folder with ID: {folder_id}')
@@ -160,24 +167,27 @@ class APIClient_Drive:
 
         gdf_list = []  # List to hold GeoDataFrames with their folder and file names
 
+        # Print all files for debugging
+        print(f"Files found in folder ID {folder_id}:")
+        for item in items:
+            print(f"- {item['name']} (ID: {item['id']}, MIME Type: {item['mimeType']})")
+
         for item in items:
             if item['mimeType'] == 'application/vnd.google-apps.folder':
                 # Process subfolders
-                subfolder_gdfs = self.process_files_in_folder(item['id'])  # Recursively process subfolder
+                print(f"Entering subfolder: {item['name']} (ID: {item['id']})")
+                subfolder_gdfs = await self.process_files_in_folder(item['id'])  # Recursively process subfolder
                 gdf_list.extend(subfolder_gdfs)  # Add subfolder GDFs to the main list
             else:
                 # Process shapefile
                 if item['name'].endswith('.shp'):
                     shapefile_prefix = item['name'].replace('.shp', '')
                     folder_name = item['folder_name']  # Get the folder name from the item
-                    gdf = self.read_shapefile_to_gdf(folder_id, shapefile_prefix,
-                                                     folder_name)  # Pass the correct folder name
+                    print(f"Processing shapefile: {item['name']} (ID: {item['id']})")
+                    gdf = await self.read_shapefile_to_gdf(folder_id, shapefile_prefix, folder_name)  # Pass the correct folder name
                     if gdf is not None:
                         print(f"GeoDataFrame created from {item['name']} in folder {folder_name}:")
                         # Append a dictionary with folder name, file name, and GeoDataFrame
                         gdf_list.append({'folder_name': folder_name, 'file_name': item['name'], 'gdf': gdf})
 
         return gdf_list  # Return the list of GeoDataFrames with their folder and file names
-
-
-
