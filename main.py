@@ -1,4 +1,4 @@
-from flask import Flask, render_template_string
+from quart import Quart, render_template_string
 import folium
 import asyncio
 import threading
@@ -11,37 +11,61 @@ from Google import Create_Service
 from aguaticaviewer.config import FOLDER_ID
 import geopandas as gpd
 
-app = Flask(__name__)
+app = Quart(__name__)
 
 # Initialize APIClient
-api_client = APIClient(interval=60)
+api_client = APIClient(interval=600)
 
 # Instantiate DriveClient
 drive_client = APIClient_Drive()
 
+# Global variable to store the entries GeoDataFrame
+cached_entries_df = None
+
+# Event to signal when data is ready
+data_ready_event = asyncio.Event()
+
+
+async def update_entries():
+    global cached_entries_df
+    while True:
+        try:
+            await api_client.fetch_entries()  # Fetch new entries
+            cached_entries_df = api_client.entries_to_geodataframe()  # Update the cached entries
+            print("Entries updated.")
+
+            # Signal that data is ready after the first fetch
+            if not data_ready_event.is_set():
+                data_ready_event.set()
+
+        except Exception as e:
+            print(f"Error fetching entries: {e}")
+
+        await asyncio.sleep(api_client.interval)  # Wait for the specified interval before fetching again
+
+
 @app.route('/')
 async def index():
+    # Wait until data is ready
+    await data_ready_event.wait()
+
     start_coords = (9.9281, -84.0907)  # Coordinates for San José, Costa Rica
     folium_map = folium.Map(location=start_coords, zoom_start=13)
 
     tooltip = 'Click For More Info'
 
-    # Fetch entries synchronously by running the async method in the current event loop
-    await api_client.fetch_entries()  # Use await to run the async method
-
-    entries_df = api_client.entries_to_geodataframe()  # Get updated entries as GeoDataFrame
-    if entries_df.empty:
+    if cached_entries_df is None or cached_entries_df.empty:
         print("No entries to display on the map.")
         return "No data available"
 
     # Retrieve and print the CRS of the GeoDataFrame
-    crs = entries_df.crs
+    crs = cached_entries_df.crs
     print(f"CRS of the entries GeoDataFrame: {crs}")
 
     # Create a FeatureGroup for entries_df
     entries_group = folium.FeatureGroup(name='Entries')
     # Iterate through the entries_df to add markers for each entry
-    for _, row in entries_df.iterrows():
+    for _, row in cached_entries_df.iterrows():
         if isinstance(row.geometry, Point):  # Check if geometry is a Point
             latitude = row.geometry.y  # Get latitude
             longitude = row.geometry.x  # Get longitude
@@ -184,7 +208,7 @@ async def index():
     with open('templates/map.html', 'r', encoding='utf-8') as f:
         map_html = f.read()
 
-    return render_template_string(map_html)
+    return await render_template_string(map_html)
 
 def run_flask():
     """Function to run Flask in the main thread."""
@@ -198,13 +222,9 @@ async def run_background_tasks():
     )
 
 if __name__ == "__main__":
-    # Run APIClient in background with asyncio
+    # Start the background task for fetching entries
     loop = asyncio.get_event_loop()
+    loop.create_task(update_entries())
 
-    # Start Flask app in a separate thread (since Flask runs synchronously)
-    flask_thread = threading.Thread(target=run_flask)
-    flask_thread.daemon = True
-    flask_thread.start()
-
-    # Start asyncio loop for APIClient in the main thread
-    loop.run_until_complete(run_background_tasks())
+    # Run Quart application with asyncio
+    loop.run_until_complete(app.run_task())
