@@ -1,15 +1,13 @@
+# Import necessary libraries
 from quart import Quart, render_template_string
 import folium
 import asyncio
-import threading
 from aguaticaviewer.api import APIClient
 from aguaticaviewer.api_drive import APIClient_Drive
 from shapely.geometry import Point
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from Google import Create_Service
 from aguaticaviewer.config import FOLDER_ID
 import geopandas as gpd
+import os
 
 app = Quart(__name__)
 
@@ -27,12 +25,19 @@ data_ready_event = asyncio.Event()
 
 
 async def update_entries():
-    global cached_entries_df
+    global cached_entries_df, cached_shapefiles_drive
     while True:
         try:
             await api_client.fetch_entries()  # Fetch new entries
             cached_entries_df = api_client.entries_to_geodataframe()  # Update the cached entries
             print("Entries updated.")
+
+            # Process shapefiles from Google Drive and update cached shapefiles
+            cached_shapefiles_drive = await drive_client.process_files_in_folder(FOLDER_ID)
+            if cached_shapefiles_drive:
+                print("Shapefiles updated.")
+            else:
+                print(f"No shapefiles found in folder ID: {FOLDER_ID}")
 
             # Signal that data is ready after the first fetch
             if not data_ready_event.is_set():
@@ -63,7 +68,7 @@ async def index():
     print(f"CRS of the entries GeoDataFrame: {crs}")
 
     # Create a FeatureGroup for entries_df
-    entries_group = folium.FeatureGroup(name='Entries')
+    entries_group = folium.FeatureGroup(name='Water measurement stations')
     # Iterate through the entries_df to add markers for each entry
     for _, row in cached_entries_df.iterrows():
         if isinstance(row.geometry, Point):  # Check if geometry is a Point
@@ -173,30 +178,26 @@ async def index():
     # Add the entries FeatureGroup to the map
     entries_group.add_to(folium_map)
 
-    # Process shapefiles and add them to the map asynchronously
-    shapefiles_drive = await drive_client.process_files_in_folder(FOLDER_ID)
-
-    if shapefiles_drive:
-        for shapefile in shapefiles_drive:
-            # Check if the GeoDataFrame is valid
+    # Process cached shapefiles and add them to the map
+    if cached_shapefiles_drive:
+        for shapefile in cached_shapefiles_drive:
             if isinstance(shapefile['gdf'], gpd.GeoDataFrame) and not shapefile['gdf'].empty:
-                # Print the CRS
                 print(f"Shapefile '{shapefile['file_name']}' CRS: {shapefile['gdf'].crs}")
-
-                # Reproject to WGS 84 if needed
                 if shapefile['gdf'].crs is not None and shapefile['gdf'].crs != "EPSG:4326":
                     shapefile['gdf'] = shapefile['gdf'].to_crs("EPSG:4326")
                     print(f"Reprojected '{shapefile['file_name']}' to EPSG:4326")
 
-                # Create a FeatureGroup for each shapefile
-                feature_group = folium.FeatureGroup(name=shapefile['file_name'])
+                # Remove .shp suffix and replace underscores
+                layer_name = os.path.splitext(shapefile['file_name'])[0].replace('_', ' ')
+
+                feature_group = folium.FeatureGroup(name=layer_name)
                 geojson_data = shapefile['gdf'].to_json()
                 folium.GeoJson(geojson_data).add_to(feature_group)
-                feature_group.add_to(folium_map)  # Add FeatureGroup to the map
+                feature_group.add_to(folium_map)
             else:
-                print(f"Shapefile '{shapefile['file_name']}' is not a valid GeoDataFrame or is empty.")
+                print(f"Shapefile '{shapefile['file_name']}' is invalid or empty.")
     else:
-        print(f"No shapefiles found in folder ID: {FOLDER_ID}")
+        print(f"No shapefiles available in cached data.")
 
     # Add LayerControl to the map
     folium.LayerControl().add_to(folium_map)
@@ -210,21 +211,13 @@ async def index():
 
     return await render_template_string(map_html)
 
-def run_flask():
-    """Function to run Flask in the main thread."""
-    app.run(debug=True, use_reloader=False)
-
-async def run_background_tasks():
-    """Run APIClient token scheduler and main logic concurrently in the background."""
-    await asyncio.gather(
-        api_client.schedule_token_refresh(),  # Schedule the token refresh
-        api_client.run()  # Main logic to check for data changes
-    )
 
 if __name__ == "__main__":
-    # Start the background task for fetching entries
+    # Start Quart server and background task
     loop = asyncio.get_event_loop()
-    loop.create_task(update_entries())
 
-    # Run Quart application with asyncio
-    loop.run_until_complete(app.run_task())
+    # Start the background task for fetching entries
+    loop.create_task(update_entries())  # Schedule the background task
+
+    # Run Quart application
+    app.run(loop=loop, use_reloader=False)
