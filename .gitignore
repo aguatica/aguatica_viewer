@@ -1,6 +1,6 @@
 
 #html file that is always updated when runnning main
-templates/map.html
+
 
 #Python
 __pycache__/

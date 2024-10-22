@@ -205,10 +205,10 @@ async def index():
     folium.LayerControl().add_to(folium_map)
 
     # Save the map as an HTML file in the templates directory
-    folium_map.save('templates/map.html')
+    folium_map.save('templates/index.html')
 
     # Render the map.html directly using render_template_string
-    with open('templates/map.html', 'r', encoding='utf-8') as f:
+    with open('templates/index.html', 'r', encoding='utf-8') as f:
         map_html = f.read()
 
     return await render_template_string(map_html)
