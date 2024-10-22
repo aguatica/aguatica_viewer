@@ -214,6 +214,8 @@ async def index():
     return await render_template_string(map_html)
 
 
+###HIII just a test
+
 if __name__ == "__main__":
     # Start Quart server and background task
     loop = asyncio.get_event_loop()
