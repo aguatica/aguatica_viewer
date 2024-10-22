@@ -6,6 +6,7 @@ templates/map.html
 __pycache__/
 *.py[cod]
 *$py.class
+*.json
 
 # Quart cache and logs
 quart_cache/

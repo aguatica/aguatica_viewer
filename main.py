@@ -8,6 +8,8 @@ from shapely.geometry import Point
 from aguaticaviewer.config import FOLDER_ID
 import geopandas as gpd
 import os
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
 
 app = Quart(__name__)
 
